@@ -4,7 +4,6 @@ import matplotlib.pyplot as plt
 
 import nltk
 # nltk.download("book")
-from nltk.corpus import gutenberg
 from nltk import ngrams
 from string import punctuation
 
@@ -38,8 +37,6 @@ print(' ' + ": " + str(count(alice_raw, punc) / len(alice_raw)) + " / " + str(co
 
 ''' 2. Probability distribution over the 27x27 possible bigrams xy '''
 alice_bigram = list(ngrams(alice_raw, 2))
-# cfd = nltk.ConditionalFreqDist([(t[0], t[1]) for t in alice_bigram])
-# print(alice_bigram.count((alphabet[0], alphabet[3])))
 
 # Change all punctuations to ' '
 alice_bigram_list = []
@@ -50,22 +47,18 @@ for ele in alice_bigram:
     if ele[1] in punc:
         ele[1] = ' '
     alice_bigram_list.append(tuple(ele))
-# print(alice_bigram_list)
 
-# FreqDist
-fdist = nltk.FreqDist(alice_bigram_list)
-
-# fdist.tabulate()
-# fdist.plot()
-
-# 3. Conditional probability
-#  3-1. P(y|x)
 # ConditionalFreqDist
 cfd = nltk.ConditionalFreqDist(alice_bigram_list)
 cfd.tabulate()
-
 # print(cfd.N())
 
+# cfd = nltk.ConditionalFreqDist([(t[0], t[1]) for t in alice_bigram])
+# print(alice_bigram.count((alphabet[0], alphabet[3])))
+
+
+''' 3. Conditional probability '''
+#  3-1. P(y|x)
 cpd = nltk.ConditionalProbDist(cfd, nltk.MLEProbDist)
 conditions = sorted(cpd.conditions())
 cpdTable = np.zeros((27, 27))
@@ -79,6 +72,27 @@ for x in range(0, 27):
         cpdTable[x][y] = cpd[conditions[x]].prob(conditions[y])
 
 df = pd.DataFrame(cpdTable, index=conditions, columns=conditions)
+print(df)
+
+
+# 3-2. P(x|y)
+cfd_yx = nltk.ConditionalFreqDist([(t[1], t[0]) for t in alice_bigram_list])
+cfd_yx.tabulate()
+
+cpd_yx = nltk.ConditionalProbDist(cfd_yx, nltk.MLEProbDist)
+conditions = sorted(cpd.conditions())
+cpdTable = np.zeros((27, 27))
+# for item in conditions:
+#     for item2 in conditions:
+#         print("(" + item + ", " + item2 + ") :" + str(cpd[item].prob(item2)))
+
+for x in range(0, 27):
+    for y in range(0, 27):
+        # print("(" + conditions[x] + ", " + conditions[y] + ") :" + str(cpd[conditions[x]].prob(conditions[y])))
+        cpdTable[x][y] = cpd_yx[conditions[x]].prob(conditions[y])
+
+df = pd.DataFrame(cpdTable, index=conditions, columns=conditions)
+print(cpdTable[0][1])
 print(df)
 
 
