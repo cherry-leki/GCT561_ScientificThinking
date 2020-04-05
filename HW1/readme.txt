@@ -1,3 +1,5 @@
+¡Ø This code is written by python
+
 ¡Ø To run the code, you need to download python packages:
 - numpy
 - nltk

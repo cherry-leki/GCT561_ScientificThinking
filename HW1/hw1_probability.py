@@ -174,7 +174,7 @@ cpd_yx_df.to_csv(r'C:\Users\Leki\Desktop\Dooo\GCT561_ScientificThinking\HW1\resu
 
 # Draw and save the plot for the probability distribution
 drawPlot(cpd_yx_table, conditions, conditions,
-         "Conditional probability distribution of P(Y=y|X=x) for ordered pair XY", 50,
+         "Conditional probability distribution P(Y=y|X=x) for ordered pair XY", 50,
          "fig_cpd_yx")
 
 
