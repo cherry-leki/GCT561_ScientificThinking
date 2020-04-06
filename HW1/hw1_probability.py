@@ -160,8 +160,12 @@ cpd = nltk.ConditionalProbDist(cfd, nltk.MLEProbDist)
 cpd_yx_table = np.zeros((27, 27))
 for x in range(0, 27):
     for y in range(0, 27):
-        # print("(" + conditions[x] + ", " + conditions[y] + ") :" + str(cpd[conditions[x]].prob(conditions[y])))
         cpd_yx_table[x][y] = cpd[conditions[x]].prob(conditions[y])
+
+# +) Compute manually
+# for x in range(0, 27):
+#     for y in range(0, 27):
+#         cpd_yx_table[x][y] = pd_bigram_table[x][y] / pd_letter_table[x]
 
 # Dataframe of probability distribution P(Y=y|X=x) for ordered pair XY
 cpd_yx_df = pd.DataFrame(cpd_yx_table, index=conditions, columns=conditions)
@@ -185,10 +189,7 @@ print()
 cpd_xy_table = np.zeros((27, 27))
 for x in range(0, 27):
     for y in range(0, 27):
-        if (y == 26):        # punctuation
-            cpd_xy_table[x][y] = cfd[conditions[x]][conditions[y]] / countFunc(alice_raw, punc)
-        else:               # alphabet
-            cpd_xy_table[x][y] = cfd[conditions[x]][conditions[y]] / alice_raw.count(alphabet[y])
+        cpd_xy_table[x][y] = pd_bigram_table[x][y] / pd_letter_table[y]
 
 # Dataframe of probability distribution P(X=x|Y=y) for ordered pair XY
 cpd_xy_df = pd.DataFrame(cpd_xy_table, index=conditions, columns=conditions)
