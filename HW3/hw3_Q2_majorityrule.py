@@ -27,11 +27,50 @@ def findErrorCorrection(images):
     return tmpImg
 
 
+def computePixelProb(image):
+    black = 0
+    white = 0
+
+    for i in range(0, image.shape[0]):
+        for j in range(0, image.shape[1]):
+            if image[i][j] == 0:
+                black = black + 1
+            else:
+                white = white + 1
+
+    p_0 = black / (image.shape[0] * image.shape[1])
+    p_1 = white / (image.shape[0] * image.shape[1])
+
+    print("Counting pixels (black/white) : " + str(black) + " / " + str(white))
+
+    return [p_0, p_1]
+
+
+def comparePixels(original, image):
+    error = 0
+    correct = 0
+
+    for i in range(0, image.shape[0]):
+        for j in range(0, image.shape[1]):
+            if original[i][j] == image[i][j]:
+                correct = correct + 1
+            else:
+                error = error + 1
+
+    p_crt = correct / (image.shape[0] * image.shape[1])
+    p_err = error / (image.shape[0] * image.shape[1])
+
+    print("Counting errors (correct/error) : " + str(correct) + ", " + str(error))
+
+    return [p_crt, p_err]
+
+
 ''' Initialize image and noise probability '''
 noise_prob = 0.1
 img = cv2.imread('spritethinker.png', 0)
 # print(img)
-
+print("### Original image ###")
+print("P(0), P(1): " + str(computePixelProb(img)) + '\n')
 
 ''' Create noise image '''
 # noiseImg1 = cv2.bitwise_not(img)      # 255-img
@@ -39,9 +78,20 @@ noiseImg1 = addNoise(img, noise_prob)
 noiseImg2 = addNoise(img, noise_prob)
 noiseImg3 = addNoise(img, noise_prob)
 
+print("### Noise image 1 ###")
+print("P_correct, P_error: " + str(comparePixels(img, noiseImg1)) + '\n')
+print("### Noise image 2 ###")
+print("P_correct, P_error: " + str(comparePixels(img, noiseImg2)) + '\n')
+print("### Noise image 3 ###")
+print("P_correct, P_error: " + str(comparePixels(img, noiseImg3)) + '\n')
+
 
 ''' Create error corrected image '''
 ecImage = findErrorCorrection([noiseImg1, noiseImg2, noiseImg3])
+
+print("### Error corrected image  ###")
+print("P_correct, P_error: " + str(comparePixels(img, ecImage)) + '\n')
+
 
 ''' Save noise images'''
 if not os.path.exists("result"):
